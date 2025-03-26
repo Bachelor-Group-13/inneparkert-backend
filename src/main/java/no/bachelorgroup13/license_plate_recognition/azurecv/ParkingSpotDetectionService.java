@@ -26,9 +26,9 @@ public class ParkingSpotDetectionService {
     private final String subscriptionKey;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public ParkingSpotDetectionService(String endpoint, String subscriptionKey) {
-        this.endpoint = endpoint;
-        this.subscriptionKey = subscriptionKey;
+    public ParkingSpotDetectionService(LicensePlateProperties properties) {
+        this.endpoint = properties.getEndpoint();
+        this.subscriptionKey = properties.getKey();
     }
 
     public List<ParkingSpot> detectParkingSpots(File imageFile) throws IOException, InterruptedException {
