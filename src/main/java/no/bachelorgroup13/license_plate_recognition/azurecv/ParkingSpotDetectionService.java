@@ -32,15 +32,13 @@ public class ParkingSpotDetectionService {
     }
 
     public List<ParkingSpot> detectParkingSpots(File imageFile) throws IOException, InterruptedException {
-        String operationLocation = sendImageForAnalysis(imageFile);
-        JsonNode analysisResult = getAnalysisResult(operationLocation);
-
+        String responseOrOperationLocation = sendImageForAnalysis(imageFile);
+        JsonNode analysisResult = getAnalysisResult(responseOrOperationLocation);
         return extractParkingSpots(analysisResult);
     }
 
     private String sendImageForAnalysis(File imageFile) throws IOException {
-        // Send image to Azure Computer Vision API and return the operation location
-        URI analyzeUri = URI.create(endpoint + "/vision/v3.2/analyze?visualFeatures=Objects,Lines");
+        URI analyzeUri = URI.create(endpoint + "/vision/v3.2/analyze?visualFeatures=Objects");
         HttpURLConnection connection = (HttpURLConnection) analyzeUri.toURL().openConnection();
 
         connection.setRequestMethod("POST");
@@ -54,31 +52,30 @@ public class ParkingSpotDetectionService {
             int read;
             while ((read = imageInputStream.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, read);
-
             }
         }
         int responseCode = connection.getResponseCode();
-        if (responseCode != 202) {
+        if (responseCode == 200) {
+            return readStream(connection.getInputStream());
+        } else if (responseCode == 202) {
+            String operationLocation = connection.getHeaderField("Operation-Location");
+            if (operationLocation == null || operationLocation.isEmpty()) {
+                String errorMessage = readStream(connection.getInputStream());
+                throw new IOException("No Operation-Location header found: " + errorMessage);
+            }
+            return operationLocation;
+        } else {
             String errorMessage = readStream(connection.getErrorStream());
-            throw new IOException(
-                    "Failed to send image to Azure. HTTP " + responseCode + ": " + errorMessage);
+            throw new IOException("Failed to send image to Azure. HTTP " + responseCode + ": " + errorMessage);
         }
-        String operationLocation = connection.getHeaderField("Operation-Location");
-        if (operationLocation == null || operationLocation.isEmpty()) {
-            String errorMessage = readStream(connection.getInputStream());
-            return errorMessage;
-        }
-        return operationLocation;
     }
 
-    private JsonNode getAnalysisResult(String operationLocationOrResult) throws IOException, InterruptedException {
-        // Poll the operation location until the analysis is done and return the result
-        if (operationLocationOrResult.startsWith("{")) {
-            return objectMapper.readTree(operationLocationOrResult);
+    private JsonNode getAnalysisResult(String responseOrOperationLocation) throws IOException, InterruptedException {
+        if (responseOrOperationLocation.trim().startsWith("{")) {
+            return objectMapper.readTree(responseOrOperationLocation);
         }
-
         while (true) {
-            URI operationUri = URI.create(operationLocationOrResult);
+            URI operationUri = URI.create(responseOrOperationLocation);
             HttpURLConnection connection = (HttpURLConnection) operationUri.toURL().openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
@@ -89,7 +86,6 @@ public class ParkingSpotDetectionService {
                 throw new IOException(
                         "Failed to get analysis result from Azure. HTTP " + responseCode + ": " + errorMessage);
             }
-
             String json = readStream(connection.getInputStream());
             JsonNode response = objectMapper.readTree(json);
 
@@ -102,12 +98,11 @@ public class ParkingSpotDetectionService {
     }
 
     private List<ParkingSpot> extractParkingSpots(JsonNode analysisResult) {
-        // Extract parking spots from the analysis result
         List<ParkingSpot> parkingSpots = new ArrayList<>();
-        JsonNode linesNode = analysisResult.path("lines");
-        if (linesNode.isArray()) {
-            int imageWidth = analysisResult.get("metadata").path("width").asInt();
-            int imageHeight = analysisResult.get("metadata").path("height").asInt();
+        JsonNode metadataNode = analysisResult.path("metadata");
+        if (!metadataNode.isMissingNode()) {
+            int imageWidth = metadataNode.path("width").asInt();
+            int imageHeight = metadataNode.path("height").asInt();
 
             int spotWidth = imageWidth / 7;
             int spotHeight = imageHeight / 2;
@@ -129,7 +124,6 @@ public class ParkingSpotDetectionService {
     }
 
     private String readStream(InputStream inputStream) throws IOException {
-        // Read the stream and return the content as a string
         if (inputStream == null) {
             return "";
         }
@@ -138,7 +132,6 @@ public class ParkingSpotDetectionService {
             String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);
-
             }
             return stringBuilder.toString();
         }
