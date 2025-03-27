@@ -23,9 +23,7 @@ public class JwtTokenProvider {
   private final JwtConfig jwtConfig;
 
   private Key getSigningKey() {
-    String secret = jwtConfig.getSecret().trim();
-    byte[] keyBytes = Decoders.BASE64.decode(secret);
-    return Keys.hmacShaKeyFor(keyBytes);
+    return Keys.secretKeyFor(SignatureAlgorithm.HS256);
   }
 
   public String generateToken(Authentication authentication) {

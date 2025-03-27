@@ -3,7 +3,6 @@ package no.bachelorgroup13.backend.controller;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.security.CustomUserDetails;
-import no.bachelorgroup13.backend.security.UserDetailsServiceImpl;
 import no.bachelorgroup13.backend.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
