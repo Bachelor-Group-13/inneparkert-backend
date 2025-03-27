@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
+import no.bachelorgroup13.backend.service.UserService;
 
 @RestController
 @RequestMapping("/license-plate")

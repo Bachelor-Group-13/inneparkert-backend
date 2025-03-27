@@ -20,11 +20,14 @@ public class User {
   @Column(name = "id")
   private UUID id;
 
-  @Column(name = "email")
+  @Column(name = "email", unique = true)
   private String email;
 
   @Column(name = "name")
   private String name;
+
+  @Column(name = "password")
+  private String password;
 
   @Column(name = "license_plate")
   private String licensePlate;
@@ -34,4 +37,7 @@ public class User {
 
   @Column(name = "phone_number")
   private String phoneNumber;
+
+  @Column(name = "enabled")
+  private Boolean enabled;
 }
