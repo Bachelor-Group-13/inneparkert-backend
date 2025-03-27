@@ -1,21 +1,17 @@
 package no.bachelorgroup13.backend.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.User;
+import no.bachelorgroup13.backend.security.CustomUserDetails;
+import no.bachelorgroup13.backend.security.UserDetailsServiceImpl;
 import no.bachelorgroup13.backend.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -48,7 +44,7 @@ public class UserController {
         .body(userService.createUser(user));
   }
 
-  @PostMapping("/{id}")
+  @PutMapping("/{id}") // Changed from PostMapping to PutMapping
   public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user) {
     return userService.getUserById(id)
         .map(existingUser -> {
@@ -58,13 +54,26 @@ public class UserController {
         .orElse(ResponseEntity.notFound().build());
   }
 
-  @PostMapping("/{id}")
+  @DeleteMapping("/{id}") // Changed from PostMapping to DeleteMapping
   public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
     return userService.getUserById(id)
         .map(user -> {
           userService.deleteUser(id);
           return ResponseEntity.noContent().<Void>build();
         })
+        .orElse(ResponseEntity.notFound().build());
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+    if (authentication == null ||
+        !(authentication.getPrincipal() instanceof CustomUserDetails)) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    return userService.getUserById(userDetails.getId())
+        .map(ResponseEntity::ok)
         .orElse(ResponseEntity.notFound().build());
   }
 }

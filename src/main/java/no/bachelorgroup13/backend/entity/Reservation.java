@@ -31,7 +31,7 @@ public class Reservation {
   @Column(name = "spot_number")
   private String spotNumber;
 
-  @Column(name = "user_id")
+  @Column(name = "user_id", insertable = true, updatable = true)
   private UUID userId;
 
   @Column(name = "reservation_date")
@@ -40,7 +40,8 @@ public class Reservation {
   @Column(name = "license_plate")
   private String licensePlate;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)  // Changed to EAGER loading
   @JoinColumn(name = "user_id", insertable = false, updatable = false)
   private User user;
 }
+
