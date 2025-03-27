@@ -1,4 +1,4 @@
-package no.bachelorgroup13.license_plate_recognition.config;
+package no.bachelorgroup13.backend.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;

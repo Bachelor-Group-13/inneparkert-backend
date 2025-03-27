@@ -1,4 +1,4 @@
-package no.bachelorgroup13.license_plate_recognition.controller;
+package no.bachelorgroup13.backend.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Arrays;
-import no.bachelorgroup13.license_plate_recognition.azurecv.ComputerVisionService;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,21 +15,25 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
+import no.bachelorgroup13.backend.controller.LicensePlateController;
+
 @WebMvcTest(LicensePlateController.class)
 class LicensePlateControllerTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-  @MockitoBean private ComputerVisionService computerVisionService;
+  @MockitoBean
+  private ComputerVisionService computerVisionService;
 
   @Test
   void testRecognizePlate_success() throws Exception {
     when(computerVisionService.getLicensePlates(any()))
         .thenReturn(Arrays.asList("AB12345", "SD34567"));
 
-    MockMultipartFile mockFile =
-        new MockMultipartFile(
-            "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-content".getBytes());
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-content".getBytes());
 
     mockMvc
         .perform(multipart("/license-plate").file(mockFile))
@@ -45,9 +49,8 @@ class LicensePlateControllerTest {
     when(computerVisionService.getLicensePlates(any()))
         .thenThrow(new RuntimeException("Test error"));
 
-    MockMultipartFile mockFile =
-        new MockMultipartFile(
-            "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-content".getBytes());
+    MockMultipartFile mockFile = new MockMultipartFile(
+        "image", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "fake-image-content".getBytes());
 
     mockMvc
         .perform(multipart("/license-plate").file(mockFile))

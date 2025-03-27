@@ -1,4 +1,4 @@
-package no.bachelorgroup13.license_plate_recognition.azurecv;
+package no.bachelorgroup13.backend.azurecv;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

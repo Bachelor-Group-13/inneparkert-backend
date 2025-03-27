@@ -1,8 +1,8 @@
-package no.bachelorgroup13.license_plate_recognition.controller;
+package no.bachelorgroup13.backend.controller;
 
 import java.io.File;
 import java.util.List;
-import no.bachelorgroup13.license_plate_recognition.azurecv.ComputerVisionService;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
 
 @RestController
 @RequestMapping("/license-plate")
