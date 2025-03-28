@@ -2,37 +2,32 @@ package no.bachelorgroup13.backend.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-/** This class is used to load the dotenv configuration. */
-@Component
+@Configuration
 public class DotenvConfig {
+
   @PostConstruct
   public void loadEnv() {
-    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
+    Dotenv dotenv = Dotenv.configure()
+        .ignoreIfMissing()
+        .ignoreIfMalformed()
+        .load();
 
-    // Azure CV
-    String endpoint = dotenv.get("COMPUTER_VISION_ENDPOINT");
-    if (endpoint != null) {
-      System.setProperty("COMPUTER_VISION_ENDPOINT", endpoint);
+    if (dotenv.get("JWT_SECRET") != null) {
+      System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET").trim());
     }
 
-    String key = dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY");
-    if (key != null) {
-      System.setProperty("COMPUTER_VISION_SUBSCRIPTION_KEY", key);
+    if (dotenv.get("JWT_EXPIRATION") != null) {
+      System.setProperty("JWT_EXPIRATION", dotenv.get("JWT_EXPIRATION").trim());
     }
 
-    // JWT
-    String jwtSecret = dotenv.get("JWT_SECRET");
-    if (jwtSecret != null) {
-      System.setProperty("JWT_SECRET", jwtSecret.trim());
+    if (dotenv.get("COMPUTER_VISION_ENDPOINT") != null) {
+      System.setProperty("COMPUTER_VISION_ENDPOINT", dotenv.get("COMPUTER_VISION_ENDPOINT"));
     }
 
-    String jwtExpiration = dotenv.get("JWT_EXPIRATION");
-    if (jwtExpiration != null) {
-      System.setProperty("JWT_EXPIRATION", jwtExpiration.trim());
+    if (dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY") != null) {
+      System.setProperty("COMPUTER_VISION_SUBSCRIPTION_KEY", dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY"));
     }
-    System.out.println("JWT_SECRET = " + System.getProperty("JWT_SECRET"));
-
   }
 }

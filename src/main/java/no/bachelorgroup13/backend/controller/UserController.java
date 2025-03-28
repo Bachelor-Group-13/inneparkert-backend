@@ -1,6 +1,7 @@
 package no.bachelorgroup13.backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import no.bachelorgroup13.backend.dto.UserDto;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.security.CustomUserDetails;
 import no.bachelorgroup13.backend.service.UserService;
@@ -9,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -32,10 +36,30 @@ public class UserController {
   }
 
   @GetMapping("/license-plate/{licensePlate}")
-  public ResponseEntity<User> getUserByLicensePlate(@PathVariable String licensePlate) {
-    return userService.getUserByLicensePlate(licensePlate)
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+  public ResponseEntity<?> getUserByLicensePlate(@PathVariable String licensePlate) {
+    System.out.println("License plate lookup request received for: " + licensePlate);
+
+    Optional<User> userOptional = userService.getUserByLicensePlate(licensePlate);
+    if (userOptional.isPresent()) {
+      User user = userOptional.get();
+      System.out.println("User found: " + user);
+
+      UserDto userDto = new UserDto();
+      userDto.setId(user.getId());
+      userDto.setName(user.getName());
+      userDto.setEmail(user.getEmail());
+      userDto.setPhoneNumber(user.getPhoneNumber());
+      userDto.setLicensePlate(user.getLicensePlate());
+      userDto.setSecondLicensePlate(user.getSecondLicensePlate());
+      return ResponseEntity.ok(userDto);
+    } else {
+      Map<String, String> response = new HashMap<>();
+      response.put("found", String.valueOf(false));
+      response.put("licensePlate", licensePlate);
+      response.put("message", "No user found with license plate: ");
+      System.out.println("No user found with license plate: " + licensePlate);
+      return ResponseEntity.ok(response);
+    }
   }
 
   @PostMapping
