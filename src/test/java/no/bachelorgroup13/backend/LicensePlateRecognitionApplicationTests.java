@@ -1,4 +1,4 @@
-package no.bachelorgroup13.license_plate_recognition;
+package no.bachelorgroup13.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

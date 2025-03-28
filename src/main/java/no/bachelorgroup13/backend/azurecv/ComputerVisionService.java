@@ -1,16 +1,19 @@
-package no.bachelorgroup13.license_plate_recognition.azurecv;
+package no.bachelorgroup13.backend.azurecv;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import no.bachelorgroup13.backend.azurecv.model.AnalyzeResult;
+import no.bachelorgroup13.backend.azurecv.model.Line;
+import no.bachelorgroup13.backend.azurecv.model.ReadResponse;
+import no.bachelorgroup13.backend.azurecv.model.ReadResult;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import no.bachelorgroup13.license_plate_recognition.azurecv.model.AnalyzeResult;
-import no.bachelorgroup13.license_plate_recognition.azurecv.model.Line;
-import no.bachelorgroup13.license_plate_recognition.azurecv.model.ReadResponse;
-import no.bachelorgroup13.license_plate_recognition.azurecv.model.ReadResult;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +31,10 @@ public class ComputerVisionService {
     this.subscriptionKey = properties.getKey();
   }
 
-  /** Method to POST the image to Azure, poll for the read results, extract plates via regex */
+  /**
+   * Method to POST the image to Azure, poll for the read results, extract plates
+   * via regex
+   */
   public List<String> getLicensePlates(File imageFile) throws IOException, InterruptedException {
     // Send image & get operation location
     String operationLocation = sendImageAndGetOperationLocation(imageFile);
@@ -41,7 +47,8 @@ public class ComputerVisionService {
   }
 
   /**
-   * POSTs the image to the Azure "read/analyze" endpoint, returns the "Operation-Location" header.
+   * POSTs the image to the Azure "read/analyze" endpoint, returns the
+   * "Operation-Location" header.
    */
   private String sendImageAndGetOperationLocation(File imageFile) throws IOException {
     URI analyzeUri = URI.create(endpoint + "/vision/v3.2/read/analyze");
@@ -77,7 +84,10 @@ public class ComputerVisionService {
     return operationLocation;
   }
 
-  /** Polls the operation location until the status is no longer "notStarted" or "running". */
+  /**
+   * Polls the operation location until the status is no longer "notStarted" or
+   * "running".
+   */
   private ReadResponse pollReadResult(String operationLocation)
       throws IOException, InterruptedException {
     while (true) {
@@ -105,7 +115,10 @@ public class ComputerVisionService {
     }
   }
 
-  /** Extracts lines from the response, applies the plate regex, and returns any matches. */
+  /**
+   * Extracts lines from the response, applies the plate regex, and returns any
+   * matches.
+   */
   private List<String> extractPlatesFromResponse(ReadResponse readResponse) {
     List<String> plates = new ArrayList<>();
 

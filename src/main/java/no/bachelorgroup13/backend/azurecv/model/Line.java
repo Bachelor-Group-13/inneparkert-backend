@@ -1,4 +1,4 @@
-package no.bachelorgroup13.license_plate_recognition.azurecv.model;
+package no.bachelorgroup13.backend.azurecv.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
