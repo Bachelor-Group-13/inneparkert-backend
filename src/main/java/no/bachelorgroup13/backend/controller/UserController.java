@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
@@ -43,17 +44,28 @@ public class UserController {
         .body(userService.createUser(user));
   }
 
-  @PutMapping("/{id}") // Changed from PostMapping to PutMapping
+  @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User user) {
     return userService.getUserById(id)
         .map(existingUser -> {
           user.setId(id);
+
+          if (user.getEmail() == null) {
+            user.setEmail(existingUser.getEmail());
+          }
+          if (user.getName() == null) {
+            user.setName(existingUser.getName());
+          }
+          if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            user.setPassword(existingUser.getPassword());
+          }
+
           return ResponseEntity.ok(userService.updateUser(user));
         })
         .orElse(ResponseEntity.notFound().build());
   }
 
-  @DeleteMapping("/{id}") // Changed from PostMapping to DeleteMapping
+  @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
     return userService.getUserById(id)
         .map(user -> {

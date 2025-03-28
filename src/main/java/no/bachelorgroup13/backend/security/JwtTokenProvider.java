@@ -1,7 +1,6 @@
 package no.bachelorgroup13.backend.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Collections;
@@ -23,14 +22,15 @@ public class JwtTokenProvider {
   private final JwtConfig jwtConfig;
 
   private Key getSigningKey() {
-    return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    byte[] keyBytes = jwtConfig.getSecret().getBytes();
+    return Keys.hmacShaKeyFor(keyBytes);
   }
 
   public String generateToken(Authentication authentication) {
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + jwtConfig.getExpirationTime());
+    Date expiryDate = new Date(now.getTime() + jwtConfig.getExpiration());
 
     return Jwts.builder()
         .setSubject(userDetails.getUsername())
