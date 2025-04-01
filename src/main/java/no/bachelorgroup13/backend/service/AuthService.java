@@ -1,6 +1,8 @@
 package no.bachelorgroup13.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import no.bachelorgroup13.backend.dto.JwtResponse;
 import no.bachelorgroup13.backend.dto.LoginRequest;
 import no.bachelorgroup13.backend.dto.MessageResponse;
@@ -26,17 +28,26 @@ public class AuthService {
   private final UserRepository userRepository;
   private final PasswordEncoder encoder;
   private final JwtTokenProvider jwtTokenProvider;
+  private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
   public JwtResponse authenticateUser(LoginRequest loginRequest) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+    try {
+      Authentication authentication = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtTokenProvider.generateToken(authentication);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      String jwt = jwtTokenProvider.generateToken(authentication);
+      String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequest.getEmail());
 
-    User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
+      User user = userRepository.findByEmail(loginRequest.getEmail())
+          .orElseThrow(() -> new RuntimeException("User not found"));
 
-    return new JwtResponse(jwt, "Bearer", user.getId(), user.getEmail(), user.getName());
+      return new JwtResponse(jwt, "Bearer", user.getId(), user.getEmail(), user.getName(), refreshToken);
+    } catch (Exception e) {
+      log.error("Authentication failed: {}", e.getMessage(), e);
+      throw e;
+    }
+
   }
 
   public MessageResponse registerUser(SignupRequest signUpRequest) {
@@ -58,5 +69,13 @@ public class AuthService {
     userRepository.save(user);
 
     return new MessageResponse("User registered successfully!");
+  }
+
+  public String refreshToken(String refreshToken) {
+    if (jwtTokenProvider.validateToken(refreshToken)) {
+      String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+      return jwtTokenProvider.generateTokenWithUsername(username);
+    }
+    throw new RuntimeException("Invalid refresh token");
   }
 }

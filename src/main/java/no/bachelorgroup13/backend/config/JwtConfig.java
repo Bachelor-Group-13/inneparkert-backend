@@ -10,8 +10,8 @@ import lombok.Data;
 public class JwtConfig {
   @Value("${app.jwt.secret}")
   private String secret;
-  @Value("${app.jwt.expiration}")
-  private long expiration;
+  private long expiration = 84000000;
+  private long refreshExpiration = 604800000;
 
   public String getSecret() {
     return secret;
@@ -19,5 +19,13 @@ public class JwtConfig {
 
   public long getExpiration() {
     return expiration;
+  }
+
+  public long getRefreshExpiration() {
+    return refreshExpiration;
+  }
+
+  public void setRefreshExpiration(long refreshExpiration) {
+    this.refreshExpiration = refreshExpiration;
   }
 }
