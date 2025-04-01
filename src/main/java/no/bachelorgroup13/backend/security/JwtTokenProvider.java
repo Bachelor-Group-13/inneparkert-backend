@@ -2,6 +2,8 @@ package no.bachelorgroup13.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
+
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -85,7 +87,7 @@ public class JwtTokenProvider {
     try {
       Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
       return true;
-    } catch (SignatureException ex) {
+    } catch (SecurityException ex) {
       log.error("Invalid JWT signature");
     } catch (MalformedJwtException ex) {
       log.error("Invalid JWT token");
