@@ -4,22 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReadResponse {
-  private String status;
-  private AnalyzeResult analyzeResult;
+    private String status;
+    private AnalyzeResult analyzeResult;
 
-  public String getStatus() {
-    return status;
-  }
+    public String getStatus() {
+        return status;
+    }
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-  public AnalyzeResult getAnalyzeResult() {
-    return analyzeResult;
-  }
+    public AnalyzeResult getAnalyzeResult() {
+        return analyzeResult;
+    }
 
-  public void setAnalyzeResult(AnalyzeResult analyzeResult) {
-    this.analyzeResult = analyzeResult;
-  }
+    public void setAnalyzeResult(AnalyzeResult analyzeResult) {
+        this.analyzeResult = analyzeResult;
+    }
 }

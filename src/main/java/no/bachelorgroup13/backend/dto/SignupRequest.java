@@ -7,19 +7,15 @@ import lombok.Data;
 
 @Data
 public class SignupRequest {
-  @NotBlank
-  @Email
-  private String email;
+    @NotBlank @Email private String email;
 
-  @NotBlank
-  @Size(min = 6)
-  private String password;
+    @NotBlank
+    @Size(min = 6)
+    private String password;
 
-  @NotBlank
-  private String name;
+    @NotBlank private String name;
 
-  private String licensePlate;
+    private String licensePlate;
 
-  private String phoneNumber;
-
+    private String phoneNumber;
 }

@@ -22,68 +22,69 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-  private final AuthenticationManager authenticationManager;
-  private final UserRepository userRepository;
-  private final PasswordEncoder encoder;
-  private final JwtTokenProvider jwtTokenProvider;
-  private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
-  public JwtResponse authenticateUser(LoginRequest loginRequest) {
-    try {
-      Authentication authentication =
-          authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(
-                  loginRequest.getEmail(), loginRequest.getPassword()));
+    public JwtResponse authenticateUser(LoginRequest loginRequest) {
+        try {
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginRequest.getEmail(), loginRequest.getPassword()));
 
-      SecurityContextHolder.getContext().setAuthentication(authentication);
-      String jwt = jwtTokenProvider.generateToken(authentication);
-      String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequest.getEmail());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtTokenProvider.generateToken(authentication);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequest.getEmail());
 
-      User user =
-          userRepository
-              .findByEmail(loginRequest.getEmail())
-              .orElseThrow(() -> new RuntimeException("User not found"));
-      System.out.println("User hash: " + user.getPassword());
+            User user =
+                    userRepository
+                            .findByEmail(loginRequest.getEmail())
+                            .orElseThrow(() -> new RuntimeException("User not found"));
+            System.out.println("User hash: " + user.getPassword());
 
-      System.out.println(
-          "Password matches: " + encoder.matches(loginRequest.getPassword(), user.getPassword()));
+            System.out.println(
+                    "Password matches: "
+                            + encoder.matches(loginRequest.getPassword(), user.getPassword()));
 
-      return new JwtResponse(
-          jwt, "Bearer", user.getId(), user.getEmail(), user.getName(), refreshToken);
-    } catch (Exception e) {
-      log.error("Authentication failed: {}", e.getMessage(), e);
-      throw e;
-    }
-  }
-
-  public MessageResponse registerUser(SignupRequest signUpRequest) {
-    if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
-      return new MessageResponse("Error: Email is already in use!");
+            return new JwtResponse(
+                    jwt, "Bearer", user.getId(), user.getEmail(), user.getName(), refreshToken);
+        } catch (Exception e) {
+            log.error("Authentication failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
-    // Create new user's account
-    User user = new User();
-    user.setId(UUID.randomUUID());
-    user.setEmail(signUpRequest.getEmail());
-    user.setPassword(encoder.encode(signUpRequest.getPassword()));
-    user.setName(signUpRequest.getName());
-    user.setLicensePlate(
-        signUpRequest.getLicensePlate() != null
-            ? signUpRequest.getLicensePlate().toUpperCase()
-            : null);
-    user.setPhoneNumber(signUpRequest.getPhoneNumber());
-    user.setEnabled(true);
+    public MessageResponse registerUser(SignupRequest signUpRequest) {
+        if (userRepository.findByEmail(signUpRequest.getEmail()).isPresent()) {
+            return new MessageResponse("Error: Email is already in use!");
+        }
 
-    userRepository.save(user);
+        // Create new user's account
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setEmail(signUpRequest.getEmail());
+        user.setPassword(encoder.encode(signUpRequest.getPassword()));
+        user.setName(signUpRequest.getName());
+        user.setLicensePlate(
+                signUpRequest.getLicensePlate() != null
+                        ? signUpRequest.getLicensePlate().toUpperCase()
+                        : null);
+        user.setPhoneNumber(signUpRequest.getPhoneNumber());
+        user.setEnabled(true);
 
-    return new MessageResponse("User registered successfully!");
-  }
+        userRepository.save(user);
 
-  public String refreshToken(String refreshToken) {
-    if (jwtTokenProvider.validateToken(refreshToken)) {
-      String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-      return jwtTokenProvider.generateTokenWithUsername(username);
+        return new MessageResponse("User registered successfully!");
     }
-    throw new RuntimeException("Invalid refresh token");
-  }
+
+    public String refreshToken(String refreshToken) {
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+            String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+            return jwtTokenProvider.generateTokenWithUsername(username);
+        }
+        throw new RuntimeException("Invalid refresh token");
+    }
 }
