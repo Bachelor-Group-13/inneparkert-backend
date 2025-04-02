@@ -5,9 +5,12 @@ import no.bachelorgroup13.backend.dto.UserDto;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.security.CustomUserDetails;
 import no.bachelorgroup13.backend.service.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,6 +25,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @GetMapping
   public ResponseEntity<List<User>> getAllUsers() {
@@ -80,8 +85,10 @@ public class UserController {
           if (user.getName() == null) {
             user.setName(existingUser.getName());
           }
-          if (user.getPassword() == null || user.getPassword().isEmpty()) {
+          if (user.getPassword() == null || user.getPassword().isBlank()) {
             user.setPassword(existingUser.getPassword());
+          } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
           }
 
           return ResponseEntity.ok(userService.updateUser(user));

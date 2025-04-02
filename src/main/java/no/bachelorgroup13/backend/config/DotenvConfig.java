@@ -9,10 +9,7 @@ public class DotenvConfig {
 
   @PostConstruct
   public void loadEnv() {
-    Dotenv dotenv = Dotenv.configure()
-        .ignoreIfMissing()
-        .ignoreIfMalformed()
-        .load();
+    Dotenv dotenv = Dotenv.configure().ignoreIfMissing().ignoreIfMalformed().load();
 
     if (dotenv.get("JWT_SECRET") != null) {
       System.setProperty("JWT_SECRET", dotenv.get("JWT_SECRET").trim());
@@ -27,7 +24,8 @@ public class DotenvConfig {
     }
 
     if (dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY") != null) {
-      System.setProperty("COMPUTER_VISION_SUBSCRIPTION_KEY", dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY"));
+      System.setProperty(
+          "COMPUTER_VISION_SUBSCRIPTION_KEY", dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY"));
     }
   }
 }

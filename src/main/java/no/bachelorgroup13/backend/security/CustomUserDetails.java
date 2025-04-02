@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.enabled = enabled;
+        this.enabled = true;
         this.authorities = authorities;
     }
 

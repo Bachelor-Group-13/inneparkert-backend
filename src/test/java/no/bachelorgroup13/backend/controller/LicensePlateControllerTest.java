@@ -16,7 +16,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
-import no.bachelorgroup13.backend.controller.LicensePlateController;
 
 @WebMvcTest(LicensePlateController.class)
 class LicensePlateControllerTest {

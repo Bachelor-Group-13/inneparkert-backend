@@ -2,6 +2,7 @@ package no.bachelorgroup13.backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -41,18 +42,45 @@ public class JwtTokenProvider {
         .compact();
   }
 
+  public String generateTokenWithUsername(String username) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + jwtConfig.getExpiration());
+
+    return Jwts.builder()
+        .setSubject(username)
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(getSigningKey())
+        .compact();
+  }
+
+  public String generateRefreshToken(String username) {
+    Date now = new Date();
+    Date expiryDate = new Date(now.getTime() + jwtConfig.getRefreshExpiration());
+
+    return Jwts.builder()
+        .setSubject(username)
+        .setIssuedAt(now)
+        .setExpiration(expiryDate)
+        .signWith(getSigningKey())
+        .compact();
+  }
+
   public String getUsernameFromToken(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     return claims.getSubject();
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
 
     String username = claims.getSubject();
     UUID id = UUID.fromString(claims.get("id", String.class));
-    CustomUserDetails principal = new CustomUserDetails(
-        id, username, "", true, Collections.singletonList(new SimpleGrantedAuthority("USER")));
+    CustomUserDetails principal =
+        new CustomUserDetails(
+            id, username, "", true, Collections.singletonList(new SimpleGrantedAuthority("USER")));
 
     return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
   }
@@ -61,7 +89,7 @@ public class JwtTokenProvider {
     try {
       Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
       return true;
-    } catch (SignatureException ex) {
+    } catch (SecurityException ex) {
       log.error("Invalid JWT signature");
     } catch (MalformedJwtException ex) {
       log.error("Invalid JWT token");
