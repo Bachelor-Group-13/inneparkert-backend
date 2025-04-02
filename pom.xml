@@ -124,6 +124,27 @@
 					</excludes>
 				</configuration>
 			</plugin>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.44.0</version>
+        <configuration>
+          <java>
+            <googleJavaFormat>
+              <version>1.17.0</version>
+            </googleJavaFormat>
+          </java>
+          </configuration>
+       <executions>
+          <execution>
+            <goals>
+              <goal>check</goal> <!-- Fails the build if code isn't formatted -->
+              <goal>apply</goal> <!-- Use this to auto-format -->
+            </goals>
+          </execution>
+      </executions>
+</plugin>
+
 		</plugins>
 	</build>
 
