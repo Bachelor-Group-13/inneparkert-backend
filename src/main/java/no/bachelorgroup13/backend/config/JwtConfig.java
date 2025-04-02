@@ -14,6 +14,7 @@ public class JwtConfig {
   private long refreshExpiration = 604800000;
 
   public String getSecret() {
+    System.out.println("JWT secret: " + secret);
     return secret;
   }
 

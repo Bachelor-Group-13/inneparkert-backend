@@ -3,13 +3,11 @@ package no.bachelorgroup13.backend.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -41,36 +39,40 @@ public class UserService {
   }
 
   public User updateUser(User updatedUser) {
-    return userRepository.findById(updatedUser.getId())
-        .map(existingUser -> {
-          if (updatedUser.getLicensePlate() != null) {
-            existingUser.setLicensePlate(updatedUser.getLicensePlate());
-          }
+    return userRepository
+        .findById(updatedUser.getId())
+        .map(
+            existingUser -> {
+              if (updatedUser.getLicensePlate() != null) {
+                existingUser.setLicensePlate(updatedUser.getLicensePlate());
+              }
 
-          if (updatedUser.getSecondLicensePlate() != null ||
-              updatedUser.getSecondLicensePlate() == null &&
-                  updatedUser.getLicensePlate() != null) {
-            existingUser.setSecondLicensePlate(updatedUser.getSecondLicensePlate());
-          }
+              if (updatedUser.getSecondLicensePlate() != null
+                  || updatedUser.getSecondLicensePlate() == null
+                      && updatedUser.getLicensePlate() != null) {
+                existingUser.setSecondLicensePlate(updatedUser.getSecondLicensePlate());
+              }
 
-          if (updatedUser.getPhoneNumber() != null) {
-            existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-          }
+              if (updatedUser.getPhoneNumber() != null) {
+                existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+              }
 
-          if (updatedUser.getName() != null) {
-            existingUser.setName(updatedUser.getName());
-          }
+              if (updatedUser.getName() != null) {
+                existingUser.setName(updatedUser.getName());
+              }
 
-          if (updatedUser.getEmail() != null) {
-            existingUser.setEmail(updatedUser.getEmail());
-          }
+              if (updatedUser.getEmail() != null) {
+                existingUser.setEmail(updatedUser.getEmail());
+              }
 
-          if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-          }
+              if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+              } else {
+                existingUser.setPassword(updatedUser.getPassword());
+              }
 
-          return userRepository.save(existingUser);
-        })
+              return userRepository.save(existingUser);
+            })
         .orElseThrow(() -> new RuntimeException("User not found with id: " + updatedUser.getId()));
   }
 

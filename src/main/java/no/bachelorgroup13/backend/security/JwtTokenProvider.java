@@ -3,7 +3,6 @@ package no.bachelorgroup13.backend.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -68,17 +67,20 @@ public class JwtTokenProvider {
   }
 
   public String getUsernameFromToken(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
     return claims.getSubject();
   }
 
   public Authentication getAuthentication(String token) {
-    Claims claims = Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+    Claims claims =
+        Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
 
     String username = claims.getSubject();
     UUID id = UUID.fromString(claims.get("id", String.class));
-    CustomUserDetails principal = new CustomUserDetails(
-        id, username, "", true, Collections.singletonList(new SimpleGrantedAuthority("USER")));
+    CustomUserDetails principal =
+        new CustomUserDetails(
+            id, username, "", true, Collections.singletonList(new SimpleGrantedAuthority("USER")));
 
     return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
   }
