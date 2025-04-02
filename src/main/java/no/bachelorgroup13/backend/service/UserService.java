@@ -12,71 +12,77 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-  public List<User> getAllUsers() {
-    return userRepository.findAll();
-  }
-
-  public Optional<User> getUserById(UUID id) {
-    return userRepository.findById(id);
-  }
-
-  public Optional<User> getUserByLicensePlate(String licensePlate) {
-    Optional<User> user = userRepository.findByLicensePlate(licensePlate);
-    if (user.isPresent()) {
-      return user;
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
-    return userRepository.findBySecondLicensePlate(licensePlate);
-  }
 
-  public User createUser(User user) {
-    if (user.getId() == null) {
-      user.setId(UUID.randomUUID());
+    public Optional<User> getUserById(UUID id) {
+        return userRepository.findById(id);
     }
-    return userRepository.save(user);
-  }
 
-  public User updateUser(User updatedUser) {
-    return userRepository
-        .findById(updatedUser.getId())
-        .map(
-            existingUser -> {
-              if (updatedUser.getLicensePlate() != null) {
-                existingUser.setLicensePlate(updatedUser.getLicensePlate());
-              }
+    public Optional<User> getUserByLicensePlate(String licensePlate) {
+        Optional<User> user = userRepository.findByLicensePlate(licensePlate);
+        if (user.isPresent()) {
+            return user;
+        }
+        return userRepository.findBySecondLicensePlate(licensePlate);
+    }
 
-              if (updatedUser.getSecondLicensePlate() != null
-                  || updatedUser.getSecondLicensePlate() == null
-                      && updatedUser.getLicensePlate() != null) {
-                existingUser.setSecondLicensePlate(updatedUser.getSecondLicensePlate());
-              }
+    public User createUser(User user) {
+        if (user.getId() == null) {
+            user.setId(UUID.randomUUID());
+        }
+        return userRepository.save(user);
+    }
 
-              if (updatedUser.getPhoneNumber() != null) {
-                existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
-              }
+    public User updateUser(User updatedUser) {
+        return userRepository
+                .findById(updatedUser.getId())
+                .map(
+                        existingUser -> {
+                            if (updatedUser.getLicensePlate() != null) {
+                                existingUser.setLicensePlate(updatedUser.getLicensePlate());
+                            }
 
-              if (updatedUser.getName() != null) {
-                existingUser.setName(updatedUser.getName());
-              }
+                            if (updatedUser.getSecondLicensePlate() != null
+                                    || updatedUser.getSecondLicensePlate() == null
+                                            && updatedUser.getLicensePlate() != null) {
+                                existingUser.setSecondLicensePlate(
+                                        updatedUser.getSecondLicensePlate());
+                            }
 
-              if (updatedUser.getEmail() != null) {
-                existingUser.setEmail(updatedUser.getEmail());
-              }
+                            if (updatedUser.getPhoneNumber() != null) {
+                                existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
+                            }
 
-              if (updatedUser.getPassword() != null && !updatedUser.getPassword().isBlank()) {
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-              } else {
-                existingUser.setPassword(updatedUser.getPassword());
-              }
+                            if (updatedUser.getName() != null) {
+                                existingUser.setName(updatedUser.getName());
+                            }
 
-              return userRepository.save(existingUser);
-            })
-        .orElseThrow(() -> new RuntimeException("User not found with id: " + updatedUser.getId()));
-  }
+                            if (updatedUser.getEmail() != null) {
+                                existingUser.setEmail(updatedUser.getEmail());
+                            }
 
-  public void deleteUser(UUID id) {
-    userRepository.deleteById(id);
-  }
+                            if (updatedUser.getPassword() != null
+                                    && !updatedUser.getPassword().isBlank()) {
+                                existingUser.setPassword(
+                                        passwordEncoder.encode(updatedUser.getPassword()));
+                            } else {
+                                existingUser.setPassword(updatedUser.getPassword());
+                            }
+
+                            return userRepository.save(existingUser);
+                        })
+                .orElseThrow(
+                        () ->
+                                new RuntimeException(
+                                        "User not found with id: " + updatedUser.getId()));
+    }
+
+    public void deleteUser(UUID id) {
+        userRepository.deleteById(id);
+    }
 }

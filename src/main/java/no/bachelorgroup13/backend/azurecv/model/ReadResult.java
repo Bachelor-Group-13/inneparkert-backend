@@ -5,13 +5,13 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReadResult {
-  private List<Line> lines;
+    private List<Line> lines;
 
-  public List<Line> getLines() {
-    return lines;
-  }
+    public List<Line> getLines() {
+        return lines;
+    }
 
-  public void setLines(List<Line> lines) {
-    this.lines = lines;
-  }
+    public void setLines(List<Line> lines) {
+        this.lines = lines;
+    }
 }

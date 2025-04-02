@@ -15,28 +15,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-  @Id
-  @Column(name = "id")
-  private UUID id;
+    @Id
+    @Column(name = "id")
+    private UUID id;
 
-  @Column(name = "email", unique = true)
-  private String email;
+    @Column(name = "email", unique = true)
+    private String email;
 
-  @Column(name = "name")
-  private String name;
+    @Column(name = "name")
+    private String name;
 
-  @Column(name = "password")
-  private String password;
+    @Column(name = "password")
+    private String password;
 
-  @Column(name = "license_plate")
-  private String licensePlate;
+    @Column(name = "license_plate")
+    private String licensePlate;
 
-  @Column(name = "second_license_plate")
-  private String secondLicensePlate;
+    @Column(name = "second_license_plate")
+    private String secondLicensePlate;
 
-  @Column(name = "phone_number")
-  private String phoneNumber;
+    @Column(name = "phone_number")
+    private String phoneNumber;
 
-  @Column(name = "enabled")
-  private Boolean enabled;
+    @Column(name = "enabled")
+    private Boolean enabled;
 }
