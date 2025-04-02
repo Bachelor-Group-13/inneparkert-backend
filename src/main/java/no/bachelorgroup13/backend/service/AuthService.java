@@ -46,8 +46,7 @@ public class AuthService {
       System.out.println("User hash: " + user.getPassword());
 
       System.out.println(
-          "Password matches: "
-              + encoder.matches(loginRequest.getPassword(), user.getPassword()));
+          "Password matches: " + encoder.matches(loginRequest.getPassword(), user.getPassword()));
 
       return new JwtResponse(
           jwt, "Bearer", user.getId(), user.getEmail(), user.getName(), refreshToken);
