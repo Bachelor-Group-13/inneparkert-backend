@@ -27,3 +27,7 @@ The project uses Docker to run a PostgreSQL database. Start the database using t
 ### 4. Build and Run the application
 To build and run the application: 
 `mvn spring-boot:run`
+
+### 5. Format before pushing
+To format and verify it's formatted before pushing 
+`mvn spotless:verify` and `mvn spotless:apply`
