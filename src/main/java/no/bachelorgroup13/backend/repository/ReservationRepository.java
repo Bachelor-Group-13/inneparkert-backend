@@ -15,5 +15,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 
   List<Reservation> findByLicensePlate(String licensePlate);
 
-  boolean existsByUserIdAndIsActive(UUID userId, LocalDate after, LocalDate equal);
+  boolean existsByUserIdAndReservation(UUID userId, LocalDate reservationDate);
 }

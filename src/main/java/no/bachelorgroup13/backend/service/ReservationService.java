@@ -48,6 +48,6 @@ public class ReservationService {
 
     public Boolean hasActiveReservation(UUID userId) {
       LocalDate today = LocalDate.now();
-        return reservationRepository.existsByUserIdAndIsActive(userId, today, today);
+        return reservationRepository.existsByUserIdAndReservation(userId, today);
     }
 }
