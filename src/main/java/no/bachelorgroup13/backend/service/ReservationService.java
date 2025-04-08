@@ -45,4 +45,9 @@ public class ReservationService {
     public void deleteReservation(Integer id) {
         reservationRepository.deleteById(id);
     }
+
+    public Boolean hasActiveReservation(UUID userId) {
+      LocalDate today = LocalDate.now();
+        return reservationRepository.existsByUserIdAndIsActive(userId, today, today);
+    }
 }
