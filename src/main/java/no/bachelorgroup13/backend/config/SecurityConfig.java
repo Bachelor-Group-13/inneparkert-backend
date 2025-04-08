@@ -61,11 +61,11 @@ public class SecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         auth ->
-                                auth.requestMatchers("/api/auth/**", "/api/auth/check")
+                                auth.requestMatchers(HttpMethod.OPTIONS, "/**")
+                                        .permitAll()
+                                        .requestMatchers("/api/auth/**")
                                         .permitAll()
                                         .requestMatchers("/license-plate")
-                                        .permitAll()
-                                        .requestMatchers(HttpMethod.OPTIONS, "/**")
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated());
