@@ -47,7 +47,7 @@ public class ReservationService {
     }
 
     public Boolean hasActiveReservation(UUID userId) {
-      LocalDate today = LocalDate.now();
-        return reservationRepository.existsByUserIdAndReservation(userId, today);
+        LocalDate today = LocalDate.now();
+        return reservationRepository.existsByUserIdAndReservationDate(userId, today);
     }
 }

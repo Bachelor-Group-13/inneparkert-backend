@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
-  List<Reservation> findByUserId(UUID userId);
+    List<Reservation> findByUserId(UUID userId);
 
-  List<Reservation> findByReservationDate(LocalDate date);
+    List<Reservation> findByReservationDate(LocalDate date);
 
-  List<Reservation> findByLicensePlate(String licensePlate);
+    List<Reservation> findByLicensePlate(String licensePlate);
 
-  boolean existsByUserIdAndReservation(UUID userId, LocalDate reservationDate);
+    boolean existsByUserIdAndReservationDate(UUID userId, LocalDate reservationDate);
 }
