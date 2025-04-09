@@ -1,7 +1,12 @@
 package no.bachelorgroup13.backend.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.dto.JwtResponse;
 import no.bachelorgroup13.backend.dto.LoginRequest;
@@ -9,13 +14,17 @@ import no.bachelorgroup13.backend.dto.MessageResponse;
 import no.bachelorgroup13.backend.dto.SignupRequest;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.repository.UserRepository;
+import no.bachelorgroup13.backend.security.CustomUserDetails;
 import no.bachelorgroup13.backend.security.JwtTokenProvider;
 import no.bachelorgroup13.backend.service.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-/* @CrossOrigin(origins = "*", maxAge = 3600) */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,6 +33,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
 
     @PostMapping("/check")
     public ResponseEntity<Boolean> checkPasswords(@RequestBody Map<String, String> passwords) {
@@ -40,8 +51,30 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(
-            @Valid @RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(authService.authenticateUser(loginRequest));
+            @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        String jwt = jwtTokenProvider.generateToken(authentication);
+
+        Cookie jwtCookie = new Cookie("jwt", jwt);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(86400);
+        jwtCookie.setSecure(false);
+        response.addCookie(jwtCookie);
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                "Bearer",
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getUsername(),
+                null));
     }
 
     @PostMapping("/signup")
@@ -69,5 +102,16 @@ public class AuthController {
                         user.getEmail(),
                         user.getName(),
                         newRefreshToken));
+    }
+
+     @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("jwt", null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        jwtCookie.setSecure(false);
+        response.addCookie(jwtCookie);
+        return ResponseEntity.ok().build();
     }
 }
