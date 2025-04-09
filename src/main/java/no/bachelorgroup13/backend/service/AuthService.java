@@ -30,18 +30,22 @@ public class AuthService {
 
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
         try {
-            User user = userRepository
-                    .findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            User user =
+                    userRepository
+                            .findByEmail(loginRequest.getEmail())
+                            .orElseThrow(() -> new RuntimeException("User not found"));
             System.out.println("User hash: " + user.getPassword());
             log.info("Found user: {}" + user.getEmail());
             log.info("Stored password hashed: {}" + user.getPassword());
             log.info("Attempting to match password: {}" + loginRequest.getPassword());
-            log.info("Password matches: {}" + encoder.matches(loginRequest.getPassword(), user.getPassword()));
+            log.info(
+                    "Password matches: {}"
+                            + encoder.matches(loginRequest.getPassword(), user.getPassword()));
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(), loginRequest.getPassword()));
+            Authentication authentication =
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    loginRequest.getEmail(), loginRequest.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
