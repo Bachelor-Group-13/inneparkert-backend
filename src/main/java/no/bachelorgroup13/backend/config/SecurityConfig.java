@@ -64,7 +64,10 @@ public class SecurityConfig {
                         auth ->
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                                         .permitAll()
-                                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/refresh")
+                                        .requestMatchers(
+                                                "/api/auth/signin",
+                                                "/api/auth/signup",
+                                                "/api/auth/refresh")
                                         .permitAll()
                                         .requestMatchers("/license-plate")
                                         .permitAll()

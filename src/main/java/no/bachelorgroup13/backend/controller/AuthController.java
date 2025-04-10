@@ -3,7 +3,6 @@ package no.bachelorgroup13.backend.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.dto.JwtResponse;
@@ -25,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:3000", "http://129.241.152.242:8081"}, allowCredentials = "true")
+@CrossOrigin(
+        origins = {"http://localhost:3000", "http://129.241.152.242:8081"},
+        allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
@@ -33,7 +34,6 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-
 
     @PostMapping("/check")
     public ResponseEntity<Boolean> checkPasswords(@RequestBody Map<String, String> passwords) {
@@ -52,8 +52,10 @@ public class AuthController {
     public ResponseEntity<JwtResponse> authenticateUser(
             @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -69,15 +71,19 @@ public class AuthController {
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user =
+                userRepository
+                        .findByEmail(userDetails.getUsername())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                "Bearer",
-                userDetails.getId(),
-                userDetails.getUsername(),
-                user.getName(),
-                null));
+        return ResponseEntity.ok(
+                new JwtResponse(
+                        jwt,
+                        "Bearer",
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        user.getName(),
+                        null));
     }
 
     @PostMapping("/signup")
@@ -107,7 +113,7 @@ public class AuthController {
                         newRefreshToken));
     }
 
-     @PostMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         Cookie jwtCookie = new Cookie("user", null);
         jwtCookie.setHttpOnly(true);
