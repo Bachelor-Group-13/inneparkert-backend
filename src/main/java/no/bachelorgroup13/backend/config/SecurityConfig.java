@@ -64,7 +64,7 @@ public class SecurityConfig {
                         auth ->
                                 auth.requestMatchers(HttpMethod.OPTIONS, "/**")
                                         .permitAll()
-                                        .requestMatchers("/api/auth/**")
+                                        .requestMatchers("/api/auth/signin", "/api/auth/signup", "/api/auth/refresh")
                                         .permitAll()
                                         .requestMatchers("/license-plate")
                                         .permitAll()
@@ -88,6 +88,12 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
+        System.out.println("CORS Configuration:");
+        System.out.println("Allowed Origins: " + configuration.getAllowedOrigins());
+        System.out.println("Allowed Methods: " + configuration.getAllowedMethods());
+        System.out.println("Allowed Headers: " + configuration.getAllowedHeaders());
+        System.out.println("Allow Credentials: " + configuration.getAllowCredentials());
         return source;
     }
 }

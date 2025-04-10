@@ -31,10 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             Optional<String> jwt = getJwtFromCookie(request);
+            log.info("JWT from cookie: {}", jwt.orElse("not found"));
 
             if (jwt.isPresent() && tokenProvider.validateToken(jwt.get())) {
                 Authentication authentication = tokenProvider.getAuthentication(jwt.get());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("Successfully authenticated user");
+            } else {
+                log.info("No valid JWT token found in cookie");
             }
         } catch (Exception ex) {
             log.error("Could not set user authentication in security context", ex);
@@ -46,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private Optional<String> getJwtFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
-                    .filter(cookie -> "jwt".equals(cookie.getName()))
+                    .filter(cookie -> "user".equals(cookie.getName()))
                     .findFirst()
                     .map(Cookie::getValue);
         }

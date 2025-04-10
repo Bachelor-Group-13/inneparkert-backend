@@ -4,9 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.dto.JwtResponse;
 import no.bachelorgroup13.backend.dto.LoginRequest;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = {"http://localhost:3000", "http://129.241.152.242:8081"}, allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
@@ -60,20 +59,24 @@ public class AuthController {
 
         String jwt = jwtTokenProvider.generateToken(authentication);
 
-        Cookie jwtCookie = new Cookie("jwt", jwt);
+        Cookie jwtCookie = new Cookie("user", jwt);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(86400);
         jwtCookie.setSecure(false);
+        jwtCookie.setDomain("localhost");
         response.addCookie(jwtCookie);
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 "Bearer",
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getUsername(),
+                user.getName(),
                 null));
     }
 
@@ -106,7 +109,7 @@ public class AuthController {
 
      @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        Cookie jwtCookie = new Cookie("jwt", null);
+        Cookie jwtCookie = new Cookie("user", null);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0);

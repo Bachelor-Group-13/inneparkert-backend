@@ -108,7 +108,7 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         if (authentication == null
                 || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -117,7 +117,16 @@ public class UserController {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return userService
                 .getUserById(userDetails.getId())
-                .map(ResponseEntity::ok)
+                .map(user -> {
+                    UserDto userDto = new UserDto();
+                    userDto.setId(user.getId());
+                    userDto.setName(user.getName());
+                    userDto.setEmail(user.getEmail());
+                    userDto.setPhoneNumber(user.getPhoneNumber());
+                    userDto.setLicensePlate(user.getLicensePlate());
+                    userDto.setSecondLicensePlate(user.getSecondLicensePlate());
+                    return ResponseEntity.ok(userDto);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 }
