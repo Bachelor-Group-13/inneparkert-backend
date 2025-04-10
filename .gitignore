@@ -34,3 +34,5 @@ build/
 
 # Env file
 .env
+
+.DS_Store

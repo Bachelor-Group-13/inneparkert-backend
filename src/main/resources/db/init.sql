@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS reservations (
     license_plate VARCHAR(20) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE (spot_number, reservation_date)
-);
+)

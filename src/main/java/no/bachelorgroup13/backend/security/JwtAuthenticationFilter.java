@@ -2,22 +2,25 @@ package no.bachelorgroup13.backend.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtTokenProvider tokenProvider;
 
     @Override
@@ -27,11 +30,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwt = getJwtFromRequest(request);
+            Optional<String> jwt = getJwtFromCookie(request);
+            log.info("JWT from cookie: {}", jwt.orElse("not found"));
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                Authentication authentication = tokenProvider.getAuthentication(jwt);
+            if (jwt.isPresent() && tokenProvider.validateToken(jwt.get())) {
+                Authentication authentication = tokenProvider.getAuthentication(jwt.get());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("Successfully authenticated user");
+            } else {
+                log.info("No valid JWT token found in cookie");
             }
         } catch (Exception ex) {
             log.error("Could not set user authentication in security context", ex);
@@ -40,11 +47,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+    private Optional<String> getJwtFromCookie(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            return Arrays.stream(request.getCookies())
+                    .filter(cookie -> "user".equals(cookie.getName()))
+                    .findFirst()
+                    .map(Cookie::getValue);
         }
-        return null;
+        return Optional.empty();
     }
 }
