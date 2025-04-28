@@ -15,4 +15,5 @@ public class UserDto {
     private String phoneNumber;
     private String licensePlate;
     private String secondLicensePlate;
+    private String role;
 }

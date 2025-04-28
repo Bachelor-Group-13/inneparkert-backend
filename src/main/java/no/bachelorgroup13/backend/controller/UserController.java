@@ -126,6 +126,7 @@ public class UserController {
                             userDto.setPhoneNumber(user.getPhoneNumber());
                             userDto.setLicensePlate(user.getLicensePlate());
                             userDto.setSecondLicensePlate(user.getSecondLicensePlate());
+                            userDto.setRole(user.getRole());
                             return ResponseEntity.ok(userDto);
                         })
                 .orElse(ResponseEntity.notFound().build());

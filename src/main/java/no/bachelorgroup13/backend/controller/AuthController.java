@@ -1,6 +1,7 @@
 package no.bachelorgroup13.backend.controller;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -14,6 +15,7 @@ import no.bachelorgroup13.backend.repository.UserRepository;
 import no.bachelorgroup13.backend.security.CustomUserDetails;
 import no.bachelorgroup13.backend.security.JwtTokenProvider;
 import no.bachelorgroup13.backend.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -93,7 +95,21 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> refreshToken(@RequestBody String refreshToken) {
+    public ResponseEntity<JwtResponse> refreshToken(HttpServletRequest request) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals("refreshToken")) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         String newAccessToken = authService.refreshToken(refreshToken);
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
         User user =
@@ -108,7 +124,7 @@ public class AuthController {
                         newAccessToken,
                         "Bearer",
                         user.getId(),
-                        user.getEmail(),
+                        username,
                         user.getName(),
                         newRefreshToken));
     }

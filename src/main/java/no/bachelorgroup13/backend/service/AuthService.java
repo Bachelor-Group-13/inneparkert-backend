@@ -70,6 +70,7 @@ public class AuthService {
         user.setEmail(signUpRequest.getEmail());
         user.setPassword(encoder.encode(signUpRequest.getPassword()));
         user.setName(signUpRequest.getName());
+        user.setRole("USER");
         user.setLicensePlate(
                 signUpRequest.getLicensePlate() != null
                         ? signUpRequest.getLicensePlate().toUpperCase()

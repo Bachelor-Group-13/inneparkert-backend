@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,13 +20,14 @@ public class User {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "email", unique = true)
+    @Email
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "license_plate")
@@ -37,6 +39,9 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     private Boolean enabled;
+
+    @Column(name = "role", nullable = false)
+    private String role;
 }
