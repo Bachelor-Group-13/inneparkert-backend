@@ -1,10 +1,8 @@
 package no.bachelorgroup13.backend.security;
 
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.repository.UserRepository;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 user.getEmail(),
                 user.getPassword(),
                 user.getEnabled(),
-                Collections.singletonList(new SimpleGrantedAuthority("USER")));
+                user.getRole());
     }
 }

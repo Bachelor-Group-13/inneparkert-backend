@@ -39,7 +39,7 @@ public class Reservation {
     @Column(name = "license_plate")
     private String licensePlate;
 
-    @ManyToOne(fetch = FetchType.EAGER) // Changed to EAGER loading
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 }

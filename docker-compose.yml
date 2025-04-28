@@ -5,14 +5,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres  # Add this line to create a default database
+      POSTGRES_DB: postgres  
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     restart: unless-stopped
 
 volumes:
   postgres_data:
-    # This named volume will persist your data

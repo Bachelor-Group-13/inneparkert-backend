@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.bachelorgroup13.backend.config.JwtConfig;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,6 +34,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("id", userDetails.getId().toString())
+                .claim("role", userDetails.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey())
@@ -86,13 +85,9 @@ public class JwtTokenProvider {
 
         String username = claims.getSubject();
         UUID id = UUID.fromString(claims.get("id", String.class));
-        CustomUserDetails principal =
-                new CustomUserDetails(
-                        id,
-                        username,
-                        "",
-                        true,
-                        Collections.singletonList(new SimpleGrantedAuthority("USER")));
+        String role = claims.get("role", String.class);
+
+        CustomUserDetails principal = new CustomUserDetails(id, username, "", true, role);
 
         return new UsernamePasswordAuthenticationToken(
                 principal, token, principal.getAuthorities());
