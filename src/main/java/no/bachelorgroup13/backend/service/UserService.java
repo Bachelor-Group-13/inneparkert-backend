@@ -6,6 +6,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.User;
 import no.bachelorgroup13.backend.repository.UserRepository;
+import no.bachelorgroup13.backend.security.Role;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,9 @@ public class UserService {
     public User createUser(User user) {
         if (user.getId() == null) {
             user.setId(UUID.randomUUID());
+        }
+        if (user.getRole() == null) {
+            user.setRole(Role.ROLE_USER);
         }
         return userRepository.save(user);
     }
@@ -74,12 +79,15 @@ public class UserService {
                                 existingUser.setPassword(updatedUser.getPassword());
                             }
 
+                            if (updatedUser.getRole() != null) {
+                                existingUser.setRole(updatedUser.getRole());
+                            }
+
                             return userRepository.save(existingUser);
                         })
                 .orElseThrow(
-                        () ->
-                                new RuntimeException(
-                                        "User not found with id: " + updatedUser.getId()));
+                        () -> new RuntimeException(
+                                "User not found with id: " + updatedUser.getId()));
     }
 
     public void deleteUser(UUID id) {

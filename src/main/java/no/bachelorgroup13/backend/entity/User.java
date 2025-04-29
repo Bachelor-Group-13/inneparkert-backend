@@ -2,6 +2,8 @@ package no.bachelorgroup13.backend.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -9,6 +11,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.bachelorgroup13.backend.security.Role;
 
 @Entity
 @Table(name = "users")
@@ -41,4 +44,8 @@ public class User {
 
     @Column(name = "enabled")
     private Boolean enabled;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role = Role.ROLE_USER;
 }
