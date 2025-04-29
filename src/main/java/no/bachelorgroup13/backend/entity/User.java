@@ -39,9 +39,6 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "enabled", nullable = false)
+    @Column(name = "enabled")
     private Boolean enabled;
-
-    @Column(name = "role", nullable = false)
-    private String role;
 }
