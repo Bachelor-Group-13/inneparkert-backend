@@ -3,6 +3,8 @@ package no.bachelorgroup13.backend.controller;
 import java.io.File;
 import java.util.List;
 import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
+import no.bachelorgroup13.backend.dto.PlateDto;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,7 +32,7 @@ public class LicensePlateController {
             image.transferTo(tempFile);
 
             // Get plates from Azure
-            List<String> plates = computerVisionService.getLicensePlates(tempFile);
+            List<PlateDto> plates = computerVisionService.getLicensePlates(tempFile);
 
             // Return JSON with "license_plates"
             return ResponseEntity.ok(new LicensePlatesResponse(plates));
@@ -44,17 +46,17 @@ public class LicensePlateController {
 
     // JSON response object
     static class LicensePlatesResponse {
-        private List<String> license_plates;
+        private List<PlateDto> license_plates;
 
-        public LicensePlatesResponse(List<String> plates) {
+        public LicensePlatesResponse(List<PlateDto> plates) {
             this.license_plates = plates;
         }
 
-        public List<String> getLicense_plates() {
+        public List<PlateDto> getLicense_plates() {
             return license_plates;
         }
 
-        public void setLicense_plates(List<String> license_plates) {
+        public void setLicense_plates(List<PlateDto> license_plates) {
             this.license_plates = license_plates;
         }
     }

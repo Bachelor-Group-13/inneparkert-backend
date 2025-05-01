@@ -5,12 +5,17 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import no.bachelorgroup13.backend.azurecv.model.AnalyzeResult;
 import no.bachelorgroup13.backend.azurecv.model.Line;
 import no.bachelorgroup13.backend.azurecv.model.ReadResponse;
 import no.bachelorgroup13.backend.azurecv.model.ReadResult;
+import no.bachelorgroup13.backend.dto.PlateDto;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,7 +37,7 @@ public class ComputerVisionService {
      * Method to POST the image to Azure, poll for the read results, extract plates
      * via regex
      */
-    public List<String> getLicensePlates(File imageFile) throws IOException, InterruptedException {
+    public List<PlateDto> getLicensePlates(File imageFile) throws IOException, InterruptedException {
         // Send image & get operation location
         String operationLocation = sendImageAndGetOperationLocation(imageFile);
 
@@ -117,8 +122,8 @@ public class ComputerVisionService {
      * Extracts lines from the response, applies the plate regex, and returns any
      * matches.
      */
-    private List<String> extractPlatesFromResponse(ReadResponse readResponse) {
-        List<String> plates = new ArrayList<>();
+    private List<PlateDto> extractPlatesFromResponse(ReadResponse readResponse) {
+        List<PlateDto> plates = new ArrayList<>();
 
         if ("succeeded".equalsIgnoreCase(readResponse.getStatus())
                 && readResponse.getAnalyzeResult() != null) {
@@ -135,7 +140,9 @@ public class ComputerVisionService {
                             candidate = candidate.replaceAll(":", "");
 
                             if (PLATE_REGEX.matcher(candidate).matches()) {
-                                plates.add(candidate);
+                                plates.add(new PlateDto(candidate, Arrays.stream(line.getBoundingBox())
+                                           .boxed()
+                                           .collect(Collectors.toList())));
                             }
                         }
                     }

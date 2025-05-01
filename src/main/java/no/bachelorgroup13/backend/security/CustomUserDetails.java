@@ -16,7 +16,8 @@ public class CustomUserDetails implements UserDetails {
     private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(UUID id, String username, String password, boolean enabled, Role role) {
+    public CustomUserDetails(
+            UUID id, String username, String password, boolean enabled, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;

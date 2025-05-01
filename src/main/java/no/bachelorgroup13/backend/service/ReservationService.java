@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.Reservation;
 import no.bachelorgroup13.backend.repository.ReservationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +50,10 @@ public class ReservationService {
     public Boolean hasActiveReservation(UUID userId) {
         LocalDate today = LocalDate.now();
         return reservationRepository.existsByUserIdAndReservationDate(userId, today);
+    }
+
+    @Transactional
+    public void deleteAllReservations() {
+        reservationRepository.deleteAll();
     }
 }

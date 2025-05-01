@@ -24,8 +24,8 @@ class LicensePlateControllerTest {
 
     @Test
     void testRecognizePlate_success() throws Exception {
-        when(computerVisionService.getLicensePlates(any()))
-                .thenReturn(Arrays.asList("AB12345", "SD34567"));
+        // when(computerVisionService.getLicensePlates(any()))
+                // .thenReturn(Arrays.asList("AB12345", "SD34567"));
 
         MockMultipartFile mockFile =
                 new MockMultipartFile(

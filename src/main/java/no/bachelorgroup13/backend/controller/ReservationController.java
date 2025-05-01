@@ -9,6 +9,7 @@ import no.bachelorgroup13.backend.service.ReservationService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,5 +96,12 @@ public class ReservationController {
                             return ResponseEntity.noContent().<Void>build();
                         })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/all")
+    @PreAuthorize("hasRole('ROLE_DEVELOPER')")
+    public ResponseEntity<Void> deleteAllReservations() {
+        reservationService.deleteAllReservations();
+        return ResponseEntity.noContent().build();
     }
 }
