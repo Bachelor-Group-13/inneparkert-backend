@@ -71,6 +71,8 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers("/license-plate")
                                         .permitAll()
+                                        .requestMatchers("/license-plate/**")
+                                        .permitAll()
                                         .requestMatchers("/api/dev/**")
                                         .hasRole("DEVELOPER")
                                         .requestMatchers("/api/user/**")

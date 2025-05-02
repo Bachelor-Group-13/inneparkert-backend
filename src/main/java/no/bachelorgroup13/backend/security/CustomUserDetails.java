@@ -14,17 +14,15 @@ public class CustomUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final boolean enabled;
-    private final String role;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(
-            UUID id, String username, String password, boolean enabled, String role) {
+            UUID id, String username, String password, boolean enabled, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.enabled = true;
-        this.role = role;
-        this.authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

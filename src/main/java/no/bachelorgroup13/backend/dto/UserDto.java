@@ -4,6 +4,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.bachelorgroup13.backend.security.Role;
 
 @Data
 @NoArgsConstructor
@@ -15,5 +16,5 @@ public class UserDto {
     private String phoneNumber;
     private String licensePlate;
     private String secondLicensePlate;
-    private String role;
+    private Role role;
 }

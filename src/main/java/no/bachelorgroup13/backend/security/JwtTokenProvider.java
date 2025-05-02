@@ -34,7 +34,6 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("id", userDetails.getId().toString())
-                .claim("role", userDetails.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(getSigningKey())
@@ -85,9 +84,8 @@ public class JwtTokenProvider {
 
         String username = claims.getSubject();
         UUID id = UUID.fromString(claims.get("id", String.class));
-        String role = claims.get("role", String.class);
 
-        CustomUserDetails principal = new CustomUserDetails(id, username, "", true, role);
+        CustomUserDetails principal = new CustomUserDetails(id, username, "", true, Role.ROLE_USER);
 
         return new UsernamePasswordAuthenticationToken(
                 principal, token, principal.getAuthorities());
