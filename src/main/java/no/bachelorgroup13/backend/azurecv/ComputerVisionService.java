@@ -9,13 +9,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import no.bachelorgroup13.backend.azurecv.model.AnalyzeResult;
 import no.bachelorgroup13.backend.azurecv.model.Line;
 import no.bachelorgroup13.backend.azurecv.model.ReadResponse;
 import no.bachelorgroup13.backend.azurecv.model.ReadResult;
 import no.bachelorgroup13.backend.dto.PlateDto;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,7 +35,8 @@ public class ComputerVisionService {
      * Method to POST the image to Azure, poll for the read results, extract plates
      * via regex
      */
-    public List<PlateDto> getLicensePlates(File imageFile) throws IOException, InterruptedException {
+    public List<PlateDto> getLicensePlates(File imageFile)
+            throws IOException, InterruptedException {
         // Send image & get operation location
         String operationLocation = sendImageAndGetOperationLocation(imageFile);
 
@@ -140,9 +139,12 @@ public class ComputerVisionService {
                             candidate = candidate.replaceAll(":", "");
 
                             if (PLATE_REGEX.matcher(candidate).matches()) {
-                                plates.add(new PlateDto(candidate, Arrays.stream(line.getBoundingBox())
-                                           .boxed()
-                                           .collect(Collectors.toList())));
+                                plates.add(
+                                        new PlateDto(
+                                                candidate,
+                                                Arrays.stream(line.getBoundingBox())
+                                                        .boxed()
+                                                        .collect(Collectors.toList())));
                             }
                         }
                     }

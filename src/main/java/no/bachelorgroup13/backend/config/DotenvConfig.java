@@ -28,5 +28,15 @@ public class DotenvConfig {
                     "COMPUTER_VISION_SUBSCRIPTION_KEY",
                     dotenv.get("COMPUTER_VISION_SUBSCRIPTION_KEY"));
         }
+
+        if (dotenv.get("VAPID_PUBLIC_KEY") != null) {
+            System.setProperty("push.vapid.publicKey", dotenv.get("VAPID_PUBLIC_KEY").trim());
+        }
+
+        if (dotenv.get("VAPID_PRIVATE_KEY") != null) {
+            System.setProperty(
+                    "push.vapid.privateKey",
+                    dotenv.get("VAPID_PRIVATE_KEY"));
+        }
     }
 }

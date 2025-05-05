@@ -27,82 +27,88 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthEntryPoint unauthorizedHandler;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final UserDetailsService userDetailsService;
+        private final JwtAuthEntryPoint unauthorizedHandler;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        @Bean
+        public DaoAuthenticationProvider authenticationProvider() {
+                DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+                authProvider.setUserDetailsService(userDetailsService);
+                authProvider.setPasswordEncoder(passwordEncoder());
 
-        return authProvider;
-    }
+                return authProvider;
+        }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
-            throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
+                        throws Exception {
+                return authConfig.getAuthenticationManager();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder(10);
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .exceptionHandling(
-                        exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        auth ->
-                                auth.requestMatchers(HttpMethod.OPTIONS, "/**")
-                                        .permitAll()
-                                        .requestMatchers(
-                                                "/api/auth/signin",
-                                                "/api/auth/signup",
-                                                "/api/auth/refresh")
-                                        .permitAll()
-                                        .requestMatchers("/license-plate")
-                                        .permitAll()
-                                        .requestMatchers("/license-plate/**")
-                                        .permitAll()
-                                        .requestMatchers("/api/dev/**")
-                                        .hasRole("DEVELOPER")
-                                        .requestMatchers("/api/user/**")
-                                        .hasAnyRole("USER", "DEVELOPER")
-                                        .anyRequest()
-                                        .authenticated());
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                                .csrf(csrf -> csrf.disable())
+                                .exceptionHandling(
+                                                exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                                .sessionManagement(
+                                                session -> session
+                                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(
+                                                auth -> auth.requestMatchers(HttpMethod.OPTIONS, "/**")
+                                                                .permitAll()
+                                                                .requestMatchers(
+                                                                                "/api/auth/signin",
+                                                                                "/api/auth/signup",
+                                                                                "/api/auth/refresh")
+                                                                .permitAll()
+                                                                .requestMatchers("/license-plate")
+                                                                .permitAll()
+                                                                .requestMatchers("/api/push/publicKey")
+                                                                .permitAll()
+                                                                .requestMatchers("/api/push/subscribe")
+                                                                .authenticated()
+                                                                .requestMatchers("/api/push/**")
+                                                                .permitAll()
+                                                                .requestMatchers("/license-plate/**")
+                                                                .permitAll()
+                                                                .requestMatchers("/api/dev/**")
+                                                                .hasRole("DEVELOPER")
+                                                                .requestMatchers("/api/user/**")
+                                                                .hasAnyRole("USER", "DEVELOPER")
+                                                                .anyRequest()
+                                                                .authenticated());
 
-        http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                http.authenticationProvider(authenticationProvider());
+                http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(
-                List.of("http://129.241.152.242:8081", "http://localhost:3000"));
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
+                configuration.setAllowedOrigins(
+                                List.of("http://129.241.152.242:8081", "http://localhost:3000"));
+                configuration.addAllowedHeader("*");
+                configuration.addAllowedMethod("*");
+                configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
 
-        System.out.println("CORS Configuration:");
-        System.out.println("Allowed Origins: " + configuration.getAllowedOrigins());
-        System.out.println("Allowed Methods: " + configuration.getAllowedMethods());
-        System.out.println("Allowed Headers: " + configuration.getAllowedHeaders());
-        System.out.println("Allow Credentials: " + configuration.getAllowCredentials());
-        return source;
-    }
+                System.out.println("CORS Configuration:");
+                System.out.println("Allowed Origins: " + configuration.getAllowedOrigins());
+                System.out.println("Allowed Methods: " + configuration.getAllowedMethods());
+                System.out.println("Allowed Headers: " + configuration.getAllowedHeaders());
+                System.out.println("Allow Credentials: " + configuration.getAllowCredentials());
+                return source;
+        }
 }
