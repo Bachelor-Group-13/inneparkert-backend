@@ -3,8 +3,11 @@ package no.bachelorgroup13.backend.controller;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import no.bachelorgroup13.backend.dto.ReservationDto;
 import no.bachelorgroup13.backend.entity.Reservation;
+import no.bachelorgroup13.backend.mapper.ReservationMapper;
 import no.bachelorgroup13.backend.repository.PushSubscriptionRepository;
 import no.bachelorgroup13.backend.service.PushServiceWrapper;
 import no.bachelorgroup13.backend.service.ReservationService;
@@ -31,46 +34,59 @@ public class ReservationController {
     private final ReservationService reservationService;
     private final PushSubscriptionRepository pushRepository;
     private final PushServiceWrapper pushService;
+    private final ReservationMapper reservationMapper;
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> getAllReservations() {
-        return ResponseEntity.ok(reservationService.getAllReservations());
+    public ResponseEntity<List<ReservationDto>> getAllReservations() {
+        return ResponseEntity.ok(
+                reservationService.getAllReservations().stream()
+                        .map(reservationMapper::toDto)
+                        .collect((Collectors.toList())));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> getReservationById(@PathVariable Integer id) {
+    public ResponseEntity<ReservationDto> getReservationById(@PathVariable Integer id) {
         return reservationService
                 .getReservationById(id)
+                .map(reservationMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Reservation>> getReservationsByUserId(@PathVariable UUID userId) {
-        return ResponseEntity.ok(reservationService.getReservationsByUserId(userId));
+    public ResponseEntity<List<ReservationDto>> getReservationsByUserId(@PathVariable UUID userId) {
+        return ResponseEntity
+                .ok(reservationService.getReservationsByUserId(userId).stream().map(reservationMapper::toDto)
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<Reservation>> getReservationsByDate(
+    public ResponseEntity<List<ReservationDto>> getReservationsByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(reservationService.getReservationsByDate(date));
+        return ResponseEntity.ok(reservationService.getReservationsByDate(date).stream().map(reservationMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/license-plate/{licensePlate}")
-    public ResponseEntity<List<Reservation>> getReservationsByLicensePlate(
+    public ResponseEntity<List<ReservationDto>> getReservationsByLicensePlate(
             @PathVariable String licensePlate) {
-        return ResponseEntity.ok(reservationService.getReservationsByLicensePlate(licensePlate));
+        return ResponseEntity.ok(
+                reservationService.getReservationsByLicensePlate(licensePlate).stream().map(reservationMapper::toDto)
+                        .collect(Collectors.toList()));
     }
 
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-        UUID userId = reservation.getUserId();
+    public ResponseEntity<ReservationDto> createReservation(
+            @RequestBody ReservationDto reservationDto) {
+        UUID userId = reservationDto.getUserId();
 
         if (reservationService.hasActiveReservation(userId)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
+        Reservation reservation = reservationMapper.toEntity(reservationDto);
         Reservation saved = reservationService.createReservation(reservation);
+        ReservationDto savedDto = reservationMapper.toDto(saved);
 
         pushRepository
                 .findAllByUserId(userId)
@@ -86,19 +102,20 @@ public class ReservationController {
                             }
                         });
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reservation> updateReservation(
-            @PathVariable Integer id, @RequestBody Reservation reservation) {
+    public ResponseEntity<ReservationDto> updateReservation(
+            @PathVariable Integer id, @RequestBody ReservationDto reservationDto) {
         return reservationService
                 .getReservationById(id)
                 .map(
                         existingReservation -> {
+                            Reservation reservation = reservationMapper.toEntity(reservationDto);
                             reservation.setId(id);
-                            return ResponseEntity.ok(
-                                    reservationService.updateReservation(reservation));
+                            Reservation updated = reservationService.updateReservation(reservation);
+                            return ResponseEntity.ok(reservationMapper.toDto(updated));
                         })
                 .orElse(ResponseEntity.notFound().build());
     }
