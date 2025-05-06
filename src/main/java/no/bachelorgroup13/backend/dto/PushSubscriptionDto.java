@@ -1,8 +1,7 @@
 package no.bachelorgroup13.backend.dto;
 
-import java.util.UUID;
-
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,13 @@ import lombok.NoArgsConstructor;
 public class PushSubscriptionDto {
     @NotNull(message = "Endpoint is required")
     private String endpoint;
+
     @NotNull(message = "P256dh key is required")
     private String p256dh;
+
     @NotNull(message = "Auth secret is required")
     private String auth;
+
     private UUID userId;
 
     // Add getters and setters
@@ -46,10 +48,16 @@ public class PushSubscriptionDto {
 
     @Override
     public String toString() {
-        return "PushSubscriptionDto{" +
-                "endpoint='" + endpoint + '\'' +
-                ", p256dh='" + (p256dh != null ? "[SET]" : "[NOT SET]") + '\'' +
-                ", auth='" + (auth != null ? "[SET]" : "[NOT SET]") + '\'' +
-                '}';
+        return "PushSubscriptionDto{"
+                + "endpoint='"
+                + endpoint
+                + '\''
+                + ", p256dh='"
+                + (p256dh != null ? "[SET]" : "[NOT SET]")
+                + '\''
+                + ", auth='"
+                + (auth != null ? "[SET]" : "[NOT SET]")
+                + '\''
+                + '}';
     }
 }

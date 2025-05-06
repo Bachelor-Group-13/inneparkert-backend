@@ -39,9 +39,7 @@ public class Application {
         }
 
         if (dotenv.get("VAPID_PRIVATE_KEY") != null) {
-            System.setProperty(
-                    "VAPID_PRIVATE_KEY",
-                    dotenv.get("VAPID_PRIVATE_KEY"));
+            System.setProperty("VAPID_PRIVATE_KEY", dotenv.get("VAPID_PRIVATE_KEY"));
         }
         SpringApplication.run(Application.class, args);
     }

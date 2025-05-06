@@ -1,24 +1,22 @@
 package no.bachelorgroup13.backend.controller;
 
+import java.util.Optional;
 import no.bachelorgroup13.backend.dto.PushSubscriptionDto;
 import no.bachelorgroup13.backend.entity.PushNotifications;
 import no.bachelorgroup13.backend.repository.PushSubscriptionRepository;
 import no.bachelorgroup13.backend.security.CustomUserDetails;
-
-import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/push")
@@ -40,7 +38,8 @@ public class PushController {
     }
 
     @PostMapping("/subscribe")
-    public ResponseEntity<?> subscribe(@RequestBody PushSubscriptionDto dto, Authentication authentication) {
+    public ResponseEntity<?> subscribe(
+            @RequestBody PushSubscriptionDto dto, Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -54,7 +53,8 @@ public class PushController {
                 return ResponseEntity.badRequest().body("Missing required subscription data");
             }
 
-            Optional<PushNotifications> existingSubscription = repository.findByEndpoint(dto.getEndpoint());
+            Optional<PushNotifications> existingSubscription =
+                    repository.findByEndpoint(dto.getEndpoint());
 
             PushNotifications pushNotifications;
             if (existingSubscription.isPresent()) {
@@ -62,14 +62,18 @@ public class PushController {
                 pushNotifications.setP256dh(dto.getP256dh());
                 pushNotifications.setAuth(dto.getAuth());
                 pushNotifications.setUserId(userDetails.getId());
-                logger.info("Updating existing push notification subscription for user: {}", userDetails.getId());
+                logger.info(
+                        "Updating existing push notification subscription for user: {}",
+                        userDetails.getId());
             } else {
                 pushNotifications = new PushNotifications();
                 pushNotifications.setEndpoint(dto.getEndpoint());
                 pushNotifications.setP256dh(dto.getP256dh());
                 pushNotifications.setAuth(dto.getAuth());
                 pushNotifications.setUserId(userDetails.getId());
-                logger.info("Creating new push notification subscription for user: {}", userDetails.getId());
+                logger.info(
+                        "Creating new push notification subscription for user: {}",
+                        userDetails.getId());
             }
 
             repository.save(pushNotifications);

@@ -72,16 +72,19 @@ public class ReservationController {
 
         Reservation saved = reservationService.createReservation(reservation);
 
-        pushRepository.findAllByUserId(userId).forEach(sub -> {
-            try {
-                pushService.sendPush(
-                        sub,
-                        "Spot " + saved.getSpotNumber() + " reserved!",
-                        "Check if you parked in someone");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        pushRepository
+                .findAllByUserId(userId)
+                .forEach(
+                        sub -> {
+                            try {
+                                pushService.sendPush(
+                                        sub,
+                                        "Spot " + saved.getSpotNumber() + " reserved!",
+                                        "Check if you parked in someone");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
 
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }

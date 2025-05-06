@@ -34,9 +34,7 @@ public class DotenvConfig {
         }
 
         if (dotenv.get("VAPID_PRIVATE_KEY") != null) {
-            System.setProperty(
-                    "push.vapid.privateKey",
-                    dotenv.get("VAPID_PRIVATE_KEY"));
+            System.setProperty("push.vapid.privateKey", dotenv.get("VAPID_PRIVATE_KEY"));
         }
     }
 }
