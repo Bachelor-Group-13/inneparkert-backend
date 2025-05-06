@@ -1,6 +1,7 @@
 package no.bachelorgroup13.backend.service;
 
 import com.google.gson.Gson;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Security;
@@ -14,7 +15,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PushServiceWrapper {
-    private final PushService pushService;
+    @Value("${vapid.keys.public}")
+    private String publicKey;
+
+    @Value("${vapid.keys.private}")
+    private String privateKey;
+
+    private PushService pushService;
+
+    @PostConstruct
+    public void init() {
+        try {
+            String safePublicKey =
+                    publicKey.replace('+', '-').replace('/', '_').replaceAll("=+$", "");
+            String safePrivateKey =
+                    privateKey.replace('+', '-').replace('/', '_').replaceAll("=+$", "");
+
+            pushService = new PushService(safePublicKey, safePrivateKey);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize push service", e);
+        }
+    }
 
     public PushServiceWrapper(
             @Value("${vapid.keys.public}") String publicKey,
