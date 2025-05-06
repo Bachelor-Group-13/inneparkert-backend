@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
 import no.bachelorgroup13.backend.dto.PlateDto;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

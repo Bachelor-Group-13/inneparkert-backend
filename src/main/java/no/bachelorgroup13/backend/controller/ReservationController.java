@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.entity.Reservation;
+import no.bachelorgroup13.backend.repository.PushSubscriptionRepository;
+import no.bachelorgroup13.backend.service.PushServiceWrapper;
 import no.bachelorgroup13.backend.service.ReservationService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final PushSubscriptionRepository pushRepository;
+    private final PushServiceWrapper pushService;
 
     @GetMapping
     public ResponseEntity<List<Reservation>> getAllReservations() {
@@ -59,17 +63,27 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createReservation(@RequestBody Reservation reservation) {
+    public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
         UUID userId = reservation.getUserId();
 
         if (reservationService.hasActiveReservation(userId)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User already has an active reservation");
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
-        Reservation created = reservationService.createReservation(reservation);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(reservationService.createReservation(created));
+        Reservation saved = reservationService.createReservation(reservation);
+
+        pushRepository.findAllByUserId(userId).forEach(sub -> {
+            try {
+                pushService.sendPush(
+                        sub,
+                        "Spot " + saved.getSpotNumber() + " reserved!",
+                        "Check if you parked in someone");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @PutMapping("/{id}")

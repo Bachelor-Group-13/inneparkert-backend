@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Arrays;
 import no.bachelorgroup13.backend.azurecv.ComputerVisionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ class LicensePlateControllerTest {
     @Test
     void testRecognizePlate_success() throws Exception {
         // when(computerVisionService.getLicensePlates(any()))
-                // .thenReturn(Arrays.asList("AB12345", "SD34567"));
+        // .thenReturn(Arrays.asList("AB12345", "SD34567"));
 
         MockMultipartFile mockFile =
                 new MockMultipartFile(

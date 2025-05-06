@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Line {
     private String text;
+
     @JsonProperty("boundingBox")
     private int[] boundingBox;
 
