@@ -35,7 +35,15 @@ public class ReservationService {
         return reservationRepository.findByLicensePlate(licensePlate);
     }
 
+    @Transactional
     public Reservation createReservation(Reservation reservation) {
+        if (reservation.getAnonymous() == null) {
+            reservation.setAnonymous(false);
+        }
+
+        if (reservation.getBlockedSpot() == null) {
+            reservation.setBlockedSpot(false);
+        }
         return reservationRepository.save(reservation);
     }
 

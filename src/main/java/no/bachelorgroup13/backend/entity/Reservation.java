@@ -34,21 +34,27 @@ public class Reservation {
     @Column(name = "spot_number")
     private String spotNumber;
 
-    @Column(name = "user_id", insertable = true, updatable = true)
+    @Column(name = "user_id", insertable = true, updatable = true, nullable = true)
     private UUID userId;
 
     @Column(name = "reservation_date")
     private LocalDate reservationDate;
 
-    @Column(name = "license_plate")
+    @Column(name = "license_plate", nullable = true)
     private String licensePlate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "estimated_departure")
+    @Column(name = "estimated_departure", nullable = true)
     private ZonedDateTime estimatedDeparture;
+
+    @Column(name = "is_anonymous", nullable = false)
+    private Boolean anonymous = false;
+
+    @Column(name = "is_blocked_spot", nullable = false)
+    private Boolean blockedSpot = false;
 
     @PrePersist
     @PreUpdate

@@ -16,6 +16,8 @@ public class ReservationMapper {
         reservationDto.setUserId(reservation.getUserId());
         reservationDto.setReservationDate(reservation.getReservationDate());
         reservationDto.setLicensePlate(reservation.getLicensePlate());
+        reservationDto.setAnonymous(Boolean.TRUE.equals(reservation.getAnonymous()));
+        reservationDto.setBlockedSpot(Boolean.TRUE.equals(reservation.getBlockedSpot()));
         reservationDto.setEstimatedDeparture(
                 reservation.getEstimatedDeparture() != null
                         ? reservation.getEstimatedDeparture()
@@ -36,9 +38,16 @@ public class ReservationMapper {
         Reservation reservation = new Reservation();
         reservation.setId(reservationDto.getId());
         reservation.setSpotNumber(reservationDto.getSpotNumber());
-        reservation.setUserId(reservationDto.getUserId());
+
+        if (Boolean.TRUE.equals(reservationDto.isAnonymous())) {
+          reservation.setUserId(null);
+        } else {
+          reservation.setUserId(reservationDto.getUserId());
+        }
         reservation.setReservationDate(reservationDto.getReservationDate());
         reservation.setLicensePlate(reservationDto.getLicensePlate());
+        reservation.setAnonymous(Boolean.TRUE.equals(reservationDto.isAnonymous()));
+        reservation.setBlockedSpot(Boolean.TRUE.equals(reservationDto.isBlockedSpot()));
         if (reservationDto.getEstimatedDeparture() != null) {
             reservation.setEstimatedDeparture(reservationDto.getEstimatedDeparture());
         }
