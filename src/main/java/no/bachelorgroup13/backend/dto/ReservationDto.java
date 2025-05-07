@@ -13,8 +13,9 @@ public class ReservationDto {
     private LocalDate reservationDate;
     private String licensePlate;
     private ZonedDateTime estimatedDeparture;
-
     private String userName;
     private String userEmail;
     private String userPhoneNumber;
+    private boolean anonymous;
+    private boolean blockedSpot;
 }
