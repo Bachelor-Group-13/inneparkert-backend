@@ -24,6 +24,8 @@ This is a bachelor project at NTNU in course [IDATA2900][IDATA2900-url]. The Pro
 
 We have had regular meetings with client and school supervisor to have a steady progress in the throghout the development.
 
+This has the plate recognition through Azure Computer Vision.
+
 ---
 
 ### Technologies
@@ -34,9 +36,10 @@ Azure CV
 Docker
 Maven
 Lombok
-Yolo v8
-Fast API - Python
-Uvicorn - Python
+
+#### Requirements
+
+Java 17+ (Spring Boot Component)
 
 ---
 
