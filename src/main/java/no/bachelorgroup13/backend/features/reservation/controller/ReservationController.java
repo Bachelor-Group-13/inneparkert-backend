@@ -2,6 +2,8 @@ package no.bachelorgroup13.backend.features.reservation.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -154,7 +156,7 @@ public class ReservationController {
                                         sub,
                                         "Spot " + reservation.getSpotNumber() + " reserved!",
                                         "Check if you parked in someone");
-                            } catch (Exception e) {
+                            } catch (IOException | GeneralSecurityException e) {
                                 log.error("Failed to send push notification to subscription", e);
                             }
                         });

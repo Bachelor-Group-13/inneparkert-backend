@@ -3,6 +3,7 @@ package no.bachelorgroup13.backend.features.licenseplate.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import no.bachelorgroup13.backend.features.licenseplate.dto.PlateDto;
 import no.bachelorgroup13.backend.features.licenseplate.service.LicensePlateService;
@@ -35,8 +36,7 @@ public class LicensePlateController {
 
             return ResponseEntity.ok(new LicensePlatesResponse(plates));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | IllegalStateException | InterruptedException e) {
             return ResponseEntity.status(500)
                     .body("Error recognizing license plate:" + e.getMessage());
         }
