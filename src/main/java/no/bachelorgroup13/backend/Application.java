@@ -2,7 +2,7 @@ package no.bachelorgroup13.backend;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
-import no.bachelorgroup13.backend.azurecv.LicensePlateProperties;
+import no.bachelorgroup13.backend.features.licenseplate.azurecv.LicensePlateProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
