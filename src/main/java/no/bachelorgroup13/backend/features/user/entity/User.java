@@ -1,5 +1,6 @@
 package no.bachelorgroup13.backend.features.user.entity;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import no.bachelorgroup13.backend.features.auth.security.Role;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Hidden
 public class User {
     @Id
     @Column(name = "id")

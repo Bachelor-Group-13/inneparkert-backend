@@ -1,5 +1,7 @@
 package no.bachelorgroup13.backend.features.push.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.Optional;
 import no.bachelorgroup13.backend.features.auth.security.CustomUserDetails;
 import no.bachelorgroup13.backend.features.push.dto.PushSubscriptionDto;
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/push")
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+@Tag(name = "Push", description = "Endpoints for managing push notifications.")
 public class PushController {
     private final Logger logger = LoggerFactory.getLogger(PushController.class);
     private final PushSubscriptionRepository repository;
@@ -32,11 +33,13 @@ public class PushController {
         this.repository = repository;
     }
 
+    @Operation(summary = "Get VAPID public key")
     @GetMapping("/publicKey")
     public ResponseEntity<String> publicKey() {
         return ResponseEntity.ok(vapidPublicKey);
     }
 
+    @Operation(summary = "Subscribe to push notifications")
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(
             @RequestBody PushSubscriptionDto dto, Authentication authentication) {
