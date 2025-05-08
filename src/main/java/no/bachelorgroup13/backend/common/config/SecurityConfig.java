@@ -1,9 +1,7 @@
 package no.bachelorgroup13.backend.common.config;
 
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import no.bachelorgroup13.backend.features.auth.security.JwtAuthEntryPoint;
-import no.bachelorgroup13.backend.features.auth.security.JwtAuthenticationFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,6 +19,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import lombok.RequiredArgsConstructor;
+import no.bachelorgroup13.backend.features.auth.security.JwtAuthEntryPoint;
+import no.bachelorgroup13.backend.features.auth.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

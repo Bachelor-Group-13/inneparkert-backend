@@ -1,10 +1,11 @@
 package no.bachelorgroup13.backend.features.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import no.bachelorgroup13.backend.common.dto.MessageResponse;
 import no.bachelorgroup13.backend.features.auth.dto.JwtResponse;
@@ -21,35 +22,19 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(
-        origins = {"http://localhost:3000", "http://129.241.152.242:8081"},
-        allowCredentials = "true")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Authentication and authorization endpoints")
 public class AuthController {
     private final AuthService authService;
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
-    @PostMapping("/check")
-    public ResponseEntity<Boolean> checkPasswords(@RequestBody Map<String, String> passwords) {
-        String raw = passwords.get("password");
-        String hashed = passwords.get("hashedPassword");
-
-        System.out.println("Raw: " + raw);
-        System.out.println("Hashed: " + hashed);
-        System.out.println("Password matches: " + passwordEncoder.matches(raw, hashed));
-        return ResponseEntity.ok(
-                passwordEncoder.matches(
-                        passwords.get("password"), passwords.get("hashedPassword")));
-    }
-
+    @Operation(summary = "Login user")
     @PostMapping("/signin")
     public ResponseEntity<JwtResponse> authenticateUser(
             @Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
@@ -88,12 +73,14 @@ public class AuthController {
                         null));
     }
 
+    @Operation(summary = "Register user")
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> registerUser(
             @Valid @RequestBody SignupRequest signUpRequest) {
         return ResponseEntity.ok(authService.registerUser(signUpRequest));
     }
 
+    @Operation(summary = "Check if user is logged in")
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> refreshToken(HttpServletRequest request) {
         String refreshToken = null;
@@ -129,6 +116,7 @@ public class AuthController {
                         newRefreshToken));
     }
 
+    @Operation(summary = "Logout user")
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         Cookie jwtCookie = new Cookie("user", null);

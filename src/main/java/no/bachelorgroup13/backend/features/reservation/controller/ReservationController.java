@@ -1,5 +1,7 @@
 package no.bachelorgroup13.backend.features.reservation.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +18,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,8 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping("/api/reservations")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
+@Tag(name = "Reservation", description = "Endpoints for managing reservations.")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -38,6 +39,7 @@ public class ReservationController {
     private final PushServiceWrapper pushService;
     private final ReservationMapper reservationMapper;
 
+    @Operation(summary = "Get all reservations")
     @GetMapping
     public ResponseEntity<List<ReservationDto>> getAllReservations() {
         return ResponseEntity.ok(
@@ -46,6 +48,7 @@ public class ReservationController {
                         .collect((Collectors.toList())));
     }
 
+    @Operation(summary = "Get reservation by ID")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationDto> getReservationById(@PathVariable Integer id) {
         return reservationService
@@ -55,6 +58,7 @@ public class ReservationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Get reservations by user ID")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReservationDto>> getReservationsByUserId(@PathVariable UUID userId) {
         return ResponseEntity.ok(
@@ -63,6 +67,7 @@ public class ReservationController {
                         .collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Get reservations by date")
     @GetMapping("/date/{date}")
     public ResponseEntity<List<ReservationDto>> getReservationsByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
@@ -72,6 +77,7 @@ public class ReservationController {
                         .collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Get reservations by license plate")
     @GetMapping("/license-plate/{licensePlate}")
     public ResponseEntity<List<ReservationDto>> getReservationsByLicensePlate(
             @PathVariable String licensePlate) {
@@ -81,6 +87,7 @@ public class ReservationController {
                         .collect(Collectors.toList()));
     }
 
+    @Operation(summary = "Get reservations by spot number")
     @PostMapping
     public ResponseEntity<?> createReservation(@RequestBody ReservationDto reservationDto) {
         log.info("Received reservation request: {}", reservationDto);
@@ -136,6 +143,7 @@ public class ReservationController {
         }
     }
 
+    @Operation(summary = "Send push notification")
     private void sendPushNotification(Reservation reservation) {
         pushRepository
                 .findAllByUserId(reservation.getUserId())
@@ -152,6 +160,7 @@ public class ReservationController {
                         });
     }
 
+    @Operation(summary = "Update reservation")
     @PutMapping("/{id}")
     public ResponseEntity<ReservationDto> updateReservation(
             @PathVariable Integer id, @RequestBody ReservationDto reservationDto) {
@@ -167,6 +176,7 @@ public class ReservationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Delete reservation")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Integer id) {
         return reservationService
@@ -179,6 +189,7 @@ public class ReservationController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Delete all reservations")
     @DeleteMapping("/all")
     @PreAuthorize("hasRole('ROLE_DEVELOPER')")
     public ResponseEntity<Void> deleteAllReservations() {

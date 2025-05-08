@@ -1,12 +1,18 @@
 package no.bachelorgroup13.backend.features.auth.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class LoginRequest {
-    @NotBlank @Email private String email;
+    @Schema(description = "The email of the user.")
+    @NotBlank
+    @Email
+    private String email;
 
-    @NotBlank private String password;
+    @Schema(description = "The password of the user.")
+    @NotBlank
+    private String password;
 }
