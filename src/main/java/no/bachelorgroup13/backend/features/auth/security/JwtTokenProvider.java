@@ -9,6 +9,9 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.bachelorgroup13.backend.common.config.JwtConfig;
+import no.bachelorgroup13.backend.features.user.entity.User;
+import no.bachelorgroup13.backend.features.user.repository.UserRepository;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class JwtTokenProvider {
 
     private final JwtConfig jwtConfig;
+    private final UserRepository userRepository;
 
     private Key getSigningKey() {
         byte[] keyBytes = jwtConfig.getSecret().getBytes();
@@ -85,7 +89,10 @@ public class JwtTokenProvider {
         String username = claims.getSubject();
         UUID id = UUID.fromString(claims.get("id", String.class));
 
-        CustomUserDetails principal = new CustomUserDetails(id, username, "", true, Role.ROLE_USER);
+        User user = userRepository.findByEmail(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        CustomUserDetails principal = new CustomUserDetails(id, username, "", true, user.getRole());
 
         return new UsernamePasswordAuthenticationToken(
                 principal, token, principal.getAuthorities());

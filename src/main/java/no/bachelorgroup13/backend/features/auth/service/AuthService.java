@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,13 +35,19 @@ public class AuthService {
                     userRepository
                             .findByEmail(loginRequest.getEmail())
                             .orElseThrow(() -> new RuntimeException("User not found"));
-            System.out.println("User hash: " + user.getPassword());
-            log.info("Found user: {}" + user.getEmail());
-            log.info("Stored password hashed: {}" + user.getPassword());
-            log.info("Attempting to match password: {}" + loginRequest.getPassword());
+
+            log.info("Found user: {}", user.getEmail());
+            log.info("User enabled: {}", user.getEnabled());
+            log.info("User role: {}", user.getRole());
+            log.info("Stored password hash: {}", user.getPassword());
+            log.info("Input password length: {}", loginRequest.getPassword().length());
             log.info(
-                    "Password matches: {}"
-                            + encoder.matches(loginRequest.getPassword(), user.getPassword()));
+                    "Password matches: {}",
+                    encoder.matches(loginRequest.getPassword(), user.getPassword()));
+
+            // Try to encode the input password to see if it matches the stored format
+            String encodedInput = encoder.encode(loginRequest.getPassword());
+            log.info("Encoded input password: {}", encodedInput);
 
             Authentication authentication =
                     authenticationManager.authenticate(
@@ -53,7 +60,7 @@ public class AuthService {
 
             return new JwtResponse(
                     jwt, "Bearer", user.getId(), user.getEmail(), user.getName(), refreshToken);
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             log.error("Authentication failed: {}", e.getMessage(), e);
             throw e;
         }
